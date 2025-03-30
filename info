@@ -1,4 +1,6 @@
-
-1. pip install python-dotenv
-2. pip install asyncpg
-3.
+Uruchom polecene w terminalu :
+pip install -r requirements.txt
+1. do dockera
+docker-compose up --build
+2. terminal
+pip install flasgger
