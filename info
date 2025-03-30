@@ -1,0 +1,4 @@
+
+1. pip install python-dotenv
+2. pip install asyncpg
+3.
