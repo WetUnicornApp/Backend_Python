@@ -1,0 +1,6 @@
+Flask[async]
+Flask-SQLAlchemy
+asyncpg
+sqlalchemy
+python-dotenv
+flasgger
