@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
+from typing import TypeVar, Type
+from Backend_Python.app.repositories.repository import Repository
 
 
 @dataclass
