@@ -1,7 +1,8 @@
 from flasgger import Swagger
 from flask import Flask
 from config.database import engine, get_db
-
+# from sqlalchemy.ext.asyncio import AsyncSession
+# import asyncio
 app = Flask(__name__)
 swagger = Swagger(app)
 
