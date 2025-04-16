@@ -3,9 +3,10 @@ from flask import Flask
 from config.database import engine, get_db
 # from sqlalchemy.ext.asyncio import AsyncSession
 # import asyncio
+from app.routes.user_routes import user_bp
 app = Flask(__name__)
 swagger = Swagger(app)
-
+app.register_blueprint(user_bp, url_prefix='/user')
 @app.route('/')
 async def index():
     async for db in get_db():
