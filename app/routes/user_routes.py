@@ -1,10 +1,13 @@
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
 
 user_bp = Blueprint('user', __name__)
 
-@user_bp.route('/', methods=['POST'])
+
+@user_bp.route('/register', methods=['POST'])
 def create_user():
-    return "Użytkownik został stworzony!", 201
+    data = request.get_json()
+    return "Przekzane dane to: " + data.get('email'), 201
+
 
 @user_bp.route('/', methods=['GET'])
 def get_users():
