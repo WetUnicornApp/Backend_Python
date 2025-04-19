@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from Backend_Python.app.models.model import Model
 from Backend_Python.app.repositories.irepository import IRepository
-from Backend_Python.app.utils.response import Response  # zakładam, że masz coś takiego
+from Backend_Python.app.utils.api_response import Response  # zakładam, że masz coś takiego
 
 T = TypeVar("T", bound=Model)
 
