@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 
+from Backend_Python.app.schemas.user_schemas.login_schema import LoginSchema
 from Backend_Python.app.schemas.user_schemas.register_schema import RegisterSchema
 from Backend_Python.app.utils.api_response import ApiResponse
 
@@ -14,4 +15,7 @@ def register():
 
 @user_bp.route('/login', methods=['POST'])
 def login():
-    return "Lista użytkowników", 200
+    # data = LoginSchema.convert_to_schema(request.get_json())
+    data = {'id': 1, "first_name": "Anna", "last_name": "Kowalska", "email": "anna.kowalska@email.pl"}
+    # TEMP DATA
+    return ApiResponse('OK', True, data).return_response(), 201
