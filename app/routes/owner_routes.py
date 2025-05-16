@@ -6,20 +6,20 @@ owner_bp = Blueprint('owner', __name__)
 
 
 @owner_bp.route('/create', methods=['POST'])
-def register():
+def create():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
 @owner_bp.route('/edit', methods=['POST'])
-def register():
+def edit():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
 @owner_bp.route('/delete', methods=['POST'])
-def register():
+def delete():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
 @owner_bp.route('/list', methods=['POST'])
-def register():
+def list():
     return ApiResponse('OK', True, {}).return_response(), 201
