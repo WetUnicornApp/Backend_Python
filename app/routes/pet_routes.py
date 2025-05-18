@@ -20,6 +20,9 @@ def delete():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
-@pet_bp.route('/list', methods=['POST'])
+@pet_bp.route('/list', methods=['GET'])
 def list():
-    return ApiResponse('OK', True, {}).return_response(), 201
+    if request.args.get('simple'):
+        return ApiResponse('OK', True, [{1: 'Fafik'}, {2: 'Petunia'}]).return_response(), 200
+    else:
+        return ApiResponse('OK', True, {}).return_response(), 200

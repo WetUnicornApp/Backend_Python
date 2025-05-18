@@ -23,7 +23,7 @@ def delete():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
-@visit_bp.route('/list-data', methods=['GET'])
+@visit_bp.route('/list', methods=['GET'])
 def list():
     return ApiResponse('OK', True, [
         {'employee': 'Anna Kowalska', 'owner': "Jan Nowak", 'pet': "Fafik", 'name': 'name name', 'description': 'lorem',
