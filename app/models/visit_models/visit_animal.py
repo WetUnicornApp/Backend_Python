@@ -2,9 +2,9 @@ from dataclasses import field
 
 from attr import dataclass
 
-from Backend_Python.app.models.animal_models.animal import Animal
-from Backend_Python.app.models.visit_models.visit import Visit
-from Backend_Python.app.models.visit_models.visit_model import VisitModel
+from app.models.animal_models.animal import Animal
+from app.models.visit_models.visit import Visit
+from app.models.visit_models.visit_model import VisitModel
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Backend_Python.app.models.user_models.user_model import UserModel
+from app.models.user_models.user_model import UserModel
 
 
 @dataclass

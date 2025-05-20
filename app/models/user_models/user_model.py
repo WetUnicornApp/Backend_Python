@@ -1,4 +1,4 @@
-from Backend_Python.app.models.model import Model
+from app.models.model import Model
 
 
 class UserModel(Model):

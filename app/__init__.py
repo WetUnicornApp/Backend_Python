@@ -7,7 +7,7 @@ def create_app():
     Swagger(app)
 
     # Rejestrujemy blueprinty (czyli nasze endpointy)
-    from Backend_Python.app.routes.user_routes import user_bp
+    from app.routes.user_routes import user_bp
 
     app.register_blueprint(user_bp, url_prefix="/users")
 

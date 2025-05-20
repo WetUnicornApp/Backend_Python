@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
 from typing import TypeVar, Type
-from Backend_Python.app.repositories.irepository import IRepository
+from app.repositories.irepository import IRepository
 
 
 @dataclass

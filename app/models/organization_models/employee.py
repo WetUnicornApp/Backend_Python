@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
-from Backend_Python.app.models.organization_models.organization_model import OrganizationModel
+from app.models.organization_models.organization_model import OrganizationModel
 
-from Backend_Python.app.models.user_models.user import User
+from app.models.user_models.user import User
 
 
 @dataclass

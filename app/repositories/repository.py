@@ -4,9 +4,9 @@ from typing import Generic, TypeVar, Type, Optional
 
 from sqlalchemy.orm import Session
 
-from Backend_Python.app.models.model import Model
-from Backend_Python.app.repositories.irepository import IRepository
-from Backend_Python.app.utils.api_response import Response  # zakładam, że masz coś takiego
+from app.models.model import Model
+from app.repositories.irepository import IRepository
+from app.utils.api_response import ApiResponse  # zakładam, że masz coś takiego
 
 T = TypeVar("T", bound=Model)
 
@@ -16,7 +16,7 @@ class Repository(Generic[T], IRepository):
         self.session = session
         self.model_cls = model_cls
 
-    def create(self, entity: T) -> Response:
+    def create(self, entity: T) -> ApiResponse:
         if not isinstance(entity, self.model_cls):
             raise Exception(f"Wrong service. Entity has to be instance of {self.model_cls.__name__}, but got {type(entity).__name__}")
 
@@ -27,9 +27,9 @@ class Repository(Generic[T], IRepository):
 
         self.session.add(entity)
         self.session.commit()
-        return Response(f"{self.model_cls.__name__} was created", True, entity)
+        return ApiResponse(f"{self.model_cls.__name__} was created", True, entity)
 
-    def update(self, entity: T) -> Response:
+    def update(self, entity: T) -> ApiResponse:
         if not isinstance(entity, self.model_cls):
             raise Exception(f"Wrong service. Entity has to be instance of {self.model_cls.__name__}, but got {type(entity).__name__}")
 
@@ -43,9 +43,9 @@ class Repository(Generic[T], IRepository):
         entity.id = existing.id
         self.session.merge(entity)
         self.session.commit()
-        return Response(f"{self.model_cls.__name__} was edited", True, entity)
+        return ApiResponse(f"{self.model_cls.__name__} was edited", True, entity)
 
-    def delete(self, entity: T) -> Response:
+    def delete(self, entity: T) -> ApiResponse:
         if entity is None:
             raise Exception("Entity cannot be None")
 
@@ -55,7 +55,7 @@ class Repository(Generic[T], IRepository):
 
         self.set_deleted(existing)
         self.session.commit()
-        return Response(f"{self.model_cls.__name__} was deleted", True, existing)
+        return ApiResponse(f"{self.model_cls.__name__} was deleted", True, existing)
 
     def get_by(self, field: str, value) -> Optional[T]:
         return self.session.query(self.model_cls).filter(getattr(self.model_cls, field) == value).first()

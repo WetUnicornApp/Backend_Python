@@ -1,8 +1,11 @@
 from flask import Blueprint, request, jsonify
 
-from Backend_Python.app.schemas.user_schemas.login_schema import LoginSchema
-from Backend_Python.app.schemas.user_schemas.register_schema import RegisterSchema
-from Backend_Python.app.utils.api_response import ApiResponse
+from app.schemas.user_schemas.register_schema import RegisterSchema
+from app.utils.api_response import ApiResponse
+
+#from Backend_Python.app.schemas.user_schemas.login_schema import LoginSchema
+#from Backend_Python.app.schemas.user_schemas.register_schema import RegisterSchema
+#from Backend_Python.app.utils.api_response import ApiResponse
 
 user_bp = Blueprint('user', __name__)
 

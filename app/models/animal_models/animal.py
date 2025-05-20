@@ -2,10 +2,10 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Optional
 
-from Backend_Python.app.models.animal_models.gender import Gender
-from Backend_Python.app.models.animal_models.type import Type
+from app.models.animal_models.gender import Gender
+from app.models.animal_models.type import Type
 
-from Backend_Python.app.models.animal_models.animal_model import AnimalModel
+from app.models.animal_models.animal_model import AnimalModel
 
 
 @dataclass

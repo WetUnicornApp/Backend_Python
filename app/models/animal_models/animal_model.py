@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
 
-from Backend_Python.app.models.model import Model
+from app.models.model import Model
 
 
 @dataclass

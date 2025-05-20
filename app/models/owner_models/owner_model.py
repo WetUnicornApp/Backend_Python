@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Backend_Python.app.models.model import Model
+from app.models.model import Model
 
 
 @dataclass

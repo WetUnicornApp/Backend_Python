@@ -3,7 +3,7 @@ from typing import Optional
 
 from attr import dataclass
 
-from Backend_Python.app.models.visit_models.visit_model import VisitModel
+from app.models.visit_models.visit_model import VisitModel
 
 
 @dataclass

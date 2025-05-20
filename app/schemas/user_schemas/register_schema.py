@@ -1,4 +1,4 @@
-from Backend_Python.app.schemas.schema import Schema
+from app.schemas.schema import Schema
 
 
 class RegisterSchema(Schema):

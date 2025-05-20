@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from Backend_Python.app.models.owner_models.owner_model import OwnerModel
-from Backend_Python.app.models.user_models.user import User
+from app.models.owner_models.owner_model import OwnerModel
+from app.models.user_models.user import User
 
 
 @dataclass

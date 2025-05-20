@@ -1,9 +1,9 @@
 from typing import Optional
 from attr import dataclass, field
 
-from Backend_Python.app.models.animal_models.animal import Animal
-from Backend_Python.app.models.owner_models.owner import Owner
-from Backend_Python.app.models.owner_models.owner_model import OwnerModel
+from app.models.animal_models.animal import Animal
+from app.models.owner_models.owner import Owner
+from app.models.owner_models.owner_model import OwnerModel
 
 
 @dataclass

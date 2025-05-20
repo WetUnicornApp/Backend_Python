@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Type
 
-from Backend_Python.app.models.model import Model
+from app.models.model import Model
 
 T = TypeVar("T", bound=Model)
 

@@ -1,4 +1,4 @@
-from Backend_Python.app.models.animal_models.animal_model import AnimalModel
+from app.models.animal_models.animal_model import AnimalModel
 
 
 class Type(AnimalModel):

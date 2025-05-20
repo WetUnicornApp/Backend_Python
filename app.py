@@ -2,9 +2,12 @@ from flask_cors import CORS
 from flasgger import Swagger
 from flask import Flask
 
-from Backend_Python.app.routes.owner_routes import owner_bp
-from Backend_Python.app.routes.pet_routes import pet_bp
-from Backend_Python.app.routes.visit_routes import visit_bp
+from app.routes.owner_routes import owner_bp
+from app.routes.pet_routes import pet_bp
+from app.routes.visit_routes import visit_bp
+#from Backend_Python.app.routes.owner_routes import owner_bp
+#from Backend_Python.app.routes.pet_routes import pet_bp
+#from Backend_Python.app.routes.visit_routes import visit_bp
 from config.database import engine, get_db
 # from sqlalchemy.ext.asyncio import AsyncSession
 # import asyncio

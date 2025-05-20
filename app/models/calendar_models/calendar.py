@@ -3,7 +3,7 @@ from datetime import datetime
 
 from attr import dataclass
 
-from Backend_Python.app.models.calendar_models.calendar_model import CalendarModel
+from app.models.calendar_models.calendar_model import CalendarModel
 
 
 @dataclass
