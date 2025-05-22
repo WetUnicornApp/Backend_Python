@@ -1,23 +1,19 @@
 import os
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-# importujemy odpowiednie klasy z SQLAlchemy, aby obsługiwać asynchroniczne operacje na bazie danych
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from dotenv import load_dotenv
+load_dotenv()  # wczyta plik .env
 
-# Ładowanie zmiennych środowiskowych z pliku .env
-load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+assert DATABASE_URL, "Brak DATABASE_URL w środowisku"
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-engine = create_async_engine(DATABASE_URL, echo=True)
-
-#Tworzenie sesji
-AsyncSessionLocal = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
-
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

@@ -9,7 +9,7 @@ owner_bp = Blueprint('owner', __name__)
 
 @owner_bp.route('/create', methods=['POST'])
 def create():
-    return ApiResponse('OK', True, {}).return_response(), 201
+    return ApiResponse('Create new owner', True, {}).return_response(), 201
 
 
 @owner_bp.route('/edit', methods=['POST'])

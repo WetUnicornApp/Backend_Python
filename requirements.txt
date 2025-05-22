@@ -6,3 +6,5 @@ python-dotenv
 flasgger
 pydantic
 flask_cors
+sqlalchemy
+pyodbc
