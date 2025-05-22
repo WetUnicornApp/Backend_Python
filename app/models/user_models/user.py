@@ -1,11 +1,14 @@
-from dataclasses import dataclass
+from sqlalchemy import Column, Integer, String
+from app.models.base import Base
 
-from app.models.user_models.user_model import UserModel
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    first_name = Column(String(100), default='')
+    last_name = Column(String(100), default='')
+    email = Column(String(255), unique=True)
+    password = Column(String(255), default='')
 
 
-@dataclass
-class User(UserModel):
-    first_name: str = ''
-    last_name: str = ''
-    email: str = ''
-    password: str = ''
+
