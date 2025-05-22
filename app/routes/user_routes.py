@@ -7,23 +7,15 @@ from app.repositories.user_repositories.user_repository import UserRepository
 from app.schemas.user_schemas.register_schema import RegisterSchema
 from app.services.service import Service
 from app.utils.api_response import ApiResponse
-from config.database import SessionLocal
 
 user_bp = Blueprint('user', __name__)
 
 
 @user_bp.route('/register', methods=['POST'])
 def register():
-    data = {'first_name': 'Anna', 'last_name': 'Kowalska', 'email': 'a.kowalska3@wp.pl', 'password': 'Haslo123',
-            'repeat_password': 'Haslo123'}
-
-    # data = request.get_json()
-    schema = RegisterSchema.convert_to_schema(data)
-
-    db: Session = SessionLocal()
+    data = request.get_json()
     service = Service(User, RegisterSchema, UserRepository)
-    db = SessionLocal()
-    response = service.create(data, db)
+    response = service.create(data)
     return response.return_response(), 201 if response.success else 400
 
 

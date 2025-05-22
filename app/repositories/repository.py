@@ -30,7 +30,7 @@ class Repository(Generic[T], ABC):
         entity.identifier = uuid.uuid4().hex
 
         if not self.validate(entity):
-            raise Exception("Validation failed")
+            raise Exception("VALIDATOR_ERROR")
 
         self.session.add(entity)
         self.session.commit()
@@ -41,7 +41,7 @@ class Repository(Generic[T], ABC):
             raise Exception(f"Wrong service. Entity must be {self.model_cls.__name__}, got {type(entity).__name__}")
 
         if not self.validate(entity):
-            raise Exception("Validation failed")
+            raise Exception("VALIDATOR_ERROR")
 
         existing = self.get_by("identifier", entity.identifier)
         if existing is None:
