@@ -7,7 +7,7 @@ from pydantic import BaseModel
 class ApiResponse:
     message: str
     success: bool
-    data: Union[BaseModel, dict, str, None, List[Union[BaseModel, dict, str]]] = None
+    data: Union[BaseModel, dict, str, None, List[Union[BaseModel, dict, str, Any]]] = None
 
     def return_response(self):
         response_data = {
@@ -19,7 +19,14 @@ class ApiResponse:
 
     def _serialize_data(self) -> Any:
         if isinstance(self.data, list):
-            return [item.dict() if isinstance(item, BaseModel) else item for item in self.data]
-        if isinstance(self.data, BaseModel):
-            return self.data.dict()
-        return self.data
+            return [self._serialize_item(item) for item in self.data]
+        return self._serialize_item(self.data)
+
+    def _serialize_item(self, item: Any) -> Any:
+        if isinstance(item, BaseModel):
+            return item.dict()
+        if hasattr(item, "to_dict") and callable(item.to_dict):
+            return item.to_dict()
+        if isinstance(item, dict) or isinstance(item, str) or item is None:
+            return item
+        return str(item)  # fallback

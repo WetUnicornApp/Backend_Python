@@ -34,9 +34,8 @@ def index():
     return f"Server: {server_name}, Database: {database_name}"
 
 if __name__ == "__main__":
-    #Wyświetlone są jakie tabel tworzymy
     print('Tabele')
     print(Model.metadata.tables.keys())
     #tworzenie tabel
-    Model.metadata.create_all(engine) #podobno jak już jest tabela to nie tsowrzy jej ponownie, tworzy tylko brakujace tabele
+    Model.metadata.create_all(engine)
     app.run(debug=True)
