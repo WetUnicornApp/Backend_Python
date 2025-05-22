@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, create_engine
 from app.models.model import Model
+from app.models.user_models.user_model import UserModel
 
 
-class User(Model):
+class User(UserModel):
     __tablename__ = 'users'
 
     first_name = Column(String(100), default='')
