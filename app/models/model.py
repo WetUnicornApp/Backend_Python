@@ -1,18 +1,19 @@
-from dataclasses import dataclass, field
 from datetime import datetime
-import uuid
-from typing import TypeVar, Type
-from app.repositories.irepository import IRepository
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, DateTime, Boolean
+
+Base = declarative_base()
 
 
-@dataclass
-class Model:
-    id: int = 0
-    datetime_created: datetime = field(default_factory=datetime.utcnow)
-    is_deleted: bool = False
+class Model(Base):
+    __abstract__ = True
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    datetime_created = Column(DateTime, default=datetime.utcnow, nullable=False)
+    is_deleted = Column(Boolean, default=False, nullable=False)
 
     def __eq__(self, other):
-        if isinstance(other, Model):
+        if isinstance(other, self.__class__):
             return self.id == other.id
         return False
 

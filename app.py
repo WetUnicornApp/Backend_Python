@@ -2,11 +2,11 @@ from flask_cors import CORS
 from flasgger import Swagger
 from flask import Flask
 from sqlalchemy import text, Result
-from sqlalchemy.orm import declarative_base
+
+from app.models.model import Model
 from app.routes.owner_routes import owner_bp
 from app.routes.pet_routes import pet_bp
 from app.routes.visit_routes import visit_bp
-from app.models.base import Base
 from config.database import engine, get_db
 # from sqlalchemy.ext.asyncio import AsyncSession
 # import asyncio
@@ -35,7 +35,8 @@ def index():
 
 if __name__ == "__main__":
     #Wyświetlone są jakie tabel tworzymy
-    print(Base.metadata.tables.keys())
+    print('Tabele')
+    print(Model.metadata.tables.keys())
     #tworzenie tabel
-    Base.metadata.create_all(engine) #podobno jak już jest tabela to nie tsowrzy jej ponownie, tworzy tylko brakujace tabele
+    Model.metadata.create_all(engine) #podobno jak już jest tabela to nie tsowrzy jej ponownie, tworzy tylko brakujace tabele
     app.run(debug=True)
