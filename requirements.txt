@@ -9,3 +9,4 @@ flask_cors
 sqlalchemy
 pyodbc
 pytest
+bcrypt
