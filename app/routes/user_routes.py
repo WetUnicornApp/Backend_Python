@@ -6,6 +6,7 @@ from app.models.user_models.user import User
 from app.repositories.user_repositories.user_repository import UserRepository
 from app.schemas.user_schemas.register_schema import RegisterSchema
 from app.services.service import Service
+from app.services.user_service import UserService
 from app.utils.api_response import ApiResponse
 
 user_bp = Blueprint('user', __name__)
@@ -21,7 +22,5 @@ def register():
 
 @user_bp.route('/login', methods=['POST'])
 def login():
-    # data = LoginSchema.convert_to_schema(request.get_json())
-    data = {'id': 1, "first_name": "Anna", "last_name": "Kowalska", "email": "anna.kowalska@email.pl"}
-    # TEMP DATA
-    return ApiResponse('OK', True, data).return_response(), 201
+    response = UserService.authenticate(request.get_json())
+    return response.return_response(), 200 if response.success else 400
