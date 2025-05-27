@@ -11,8 +11,6 @@ class User(UserModel):
     email = Column(String(255), unique=True)
     password = Column(String(255), default='')
 
-
-
     def to_dict(self):
         return {
             "id": self.id,

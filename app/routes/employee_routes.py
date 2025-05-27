@@ -7,42 +7,42 @@ from app.utils.api_response import ApiResponse
 
 # from Backend_Python.app.utils.api_response import ApiResponse
 
-visit_bp = Blueprint('visit', __name__)
+employee_bp = Blueprint('employee', __name__)
 
 
-@visit_bp.route('/create', methods=['POST'])
+@employee_bp.route('/create', methods=['POST'])
 def create():
     """
-        Expect form content
-        Return 201 or 400
-        """
+    Expect form content
+    Return 201 or 400
+    """
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
-@visit_bp.route('/edit', methods=['POST'])
+@employee_bp.route('/edit', methods=['POST'])
 def edit():
     """
-        Expect form content
-        Return 200 or 400
-        """
-    return ApiResponse('OK', True, {}).return_response(), 201
+    Expect form content
+    Return 200 or 400
+    """
+    return ApiResponse('OK', True, {}).return_response(), 200
 
 
-@visit_bp.route('/delete', methods=['DELETE'])
+@employee_bp.route('/delete', methods=['DELETE'])
 def delete():
     """
-        Expect visit identifier
-        Return 200 or 400
-        """
+    Expect employee identifier
+    Return 200 or 400
+    """
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
-@visit_bp.route('/list', methods=['GET'])
+@employee_bp.route('/list', methods=['GET'])
 def list():
     """
         Expect nothing
         Return 200 or 400
-        """
+    """
     return ApiResponse('OK', True, [
         {'employee': 'Anna Kowalska', 'owner': "Jan Nowak", 'pet': "Fafik", 'name': 'name name', 'description': 'lorem',
          'date': datetime.now().strftime('%d.%m.%Y'),
