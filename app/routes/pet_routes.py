@@ -23,12 +23,12 @@ def delete():
 
 
 @pet_bp.route('/gender-list', methods=['GET'])
-def delete():
+def gender_list():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
 @pet_bp.route('/type-list', methods=['GET'])
-def delete():
+def type_list():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
