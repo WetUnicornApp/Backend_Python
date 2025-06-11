@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from flasgger import Swagger
-from flask import Flask
+from flask import Flask, Blueprint
 from sqlalchemy import text, Result
 
 from app.models.model import Model
@@ -34,10 +34,10 @@ def index():
     server_name = row['server_name']
     database_name = row['database_name']
     return f"Server: {server_name}, Database: {database_name}"
+user_bp = Blueprint('user', __name__)
 
 if __name__ == "__main__":
     print('Tabele')
     print(Model.metadata.tables.keys())
-    #tworzenie tabel
     Model.metadata.create_all(engine)
     app.run(debug=True)
