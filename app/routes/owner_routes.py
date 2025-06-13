@@ -63,12 +63,22 @@ def edit(user_id):
     return ApiResponse("User updated successfully", True, user.to_dict()).return_response(), 200
 
 
-@owner_bp.route('/delete', methods=['DELETE'])
-def delete():
-    """
-    Expect owner identifier
-    Return 200 or error
-    """
+@owner_bp.route('/delete/<int:user_id>', methods=['DELETE'])
+def delete(user_id):
+    db = SessionLocal()
+    repo = OwnerRepository(db)
+    repo_user = UserRepository(db)
+
+    owner = repo.session.query(Owner).filter_by(user_id=user_id).first()
+    if not owner:
+        return ApiResponse("Owner not found", False).return_response(), 404
+    user = repo_user.session.query(User).filter_by(id=user_id).first()
+    if user:
+        db.delete(user)
+
+    db.delete(owner)
+
+    db.commit()
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
@@ -88,3 +98,24 @@ def list():
             "last_name": user.last_name if user else None
         })
     return ApiResponse("Success", True, result).return_response(), 200
+
+@owner_bp.route('/information/<int:user_id>', methods=['GET'])
+def get_owner(user_id):
+    db = SessionLocal()
+    owner_repo = OwnerRepository(db)
+    user_repo = UserRepository(db)
+
+    owner = owner_repo.session.query(Owner).filter_by(user_id=user_id).first()
+    if not owner:
+        return ApiResponse("Owner not found", False).return_response(), 404
+
+    user = user_repo.session.query(User).filter_by(id=user_id).first()
+    result={
+        "id": owner.id,
+        "user_id": owner.user_id,
+        "email": user.email if user else None,
+        "first_name": user.first_name if user else None,
+        "last_name": user.last_name if user else None
+    }
+    return ApiResponse("OK", True, result).return_response(), 200
+
