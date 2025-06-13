@@ -1,16 +1,26 @@
 from dataclasses import dataclass
-from typing import Optional
 
-from sqlalchemy import Integer, Column
+from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 
-from app.models.organization_models.organization_model import OrganizationModel
+from app.models.model import Model  #a
 
-from app.models.user_models.user import User
 
 
 @dataclass
-class Employee(OrganizationModel):
-    __tablename__ = 'employees'
-    id = Column(Integer, primary_key=True)
-    user_id: int = 0  #
-    user: Optional[User] = None
+class Employee(Model):
+    __tablename__ = "employees"
+    user_id: int = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="employees")
+    organization_id = Column(Integer, ForeignKey('organization.id'))
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "organization_id": self.organization_id
+        }
+
+    pass
+
+
+

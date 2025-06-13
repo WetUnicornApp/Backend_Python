@@ -1,4 +1,6 @@
 from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.orm import relationship
+
 from app.models.model import Model
 from app.models.user_models.user_model import UserModel
 
@@ -10,7 +12,7 @@ class User(UserModel):
     last_name = Column(String(100), default='')
     email = Column(String(255), unique=True)
     password = Column(String(255), default='')
-
+    employees = relationship("Employee", back_populates="user")
     def to_dict(self):
         return {
             "id": self.id,

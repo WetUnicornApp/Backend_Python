@@ -32,6 +32,7 @@ class Service(Generic[ModelT, SchemaT, RepoT]):
         except ValidationError as e:
             return ApiResponse("VALIDATOR_ERROR", False, e.errors())
         except Exception as e:
+            print("Błąd w Service.create():", str(e))
             return ApiResponse("ERROR_WHILE_CREATE_THEN_OBJECT", False, str(e))
 
     def _schema_to_model(self, schema_obj: SchemaT) -> ModelT:

@@ -2,9 +2,8 @@ from flask_cors import CORS
 from flasgger import Swagger
 from flask import Flask, Blueprint
 from sqlalchemy import text, Result
-
-from app.models.model import Model
 from app.routes.employee_routes import employee_bp
+from app.models.model import Model
 from app.routes.owner_routes import owner_bp
 from app.routes.pet_routes import pet_bp
 from app.routes.visit_routes import visit_bp
@@ -16,6 +15,7 @@ from app.routes.user_routes import user_bp
 #To musim być dzięki temu tworzone są tabela w bazie danych na podstawie modeli
 from app.models.user_models import user
 from app.models.organization_models.organization_model import OrganizationModel
+from app.models.organization_models.employee import Employee
 app = Flask(__name__)
 swagger = Swagger(app)
 app.register_blueprint(user_bp, url_prefix='/user')
@@ -41,6 +41,7 @@ def index():
     return f"Server: {server_name}, Database: {database_name}"
 user_bp = Blueprint('user', __name__)
 organization_bp = Blueprint('organization', __name__)
+employee_bp = Blueprint('employee', __name__)
 if __name__ == "__main__":
     print('Tabele')
     print(Model.metadata.tables.keys())
