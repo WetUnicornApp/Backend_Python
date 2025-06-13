@@ -16,8 +16,6 @@ from app.services.service import Service
 from app.utils.api_response import ApiResponse
 from config.database import SessionLocal
 
-# from Backend_Python.app.utils.api_response import ApiResponse
-
 employee_bp = Blueprint('employee', __name__)
 
 
@@ -93,17 +91,14 @@ def delete(user_id):
     repo = EmployeeRepository(db)
     user_repo = UserRepository(db)
 
-    # Znajdź pracownika po user_id
     employee = repo.session.query(Employee).filter_by(user_id=user_id).first()
     if not employee:
         return ApiResponse("Employee not found", False).return_response(), 404
 
-    # Usuń powiązanego użytkownika
     user = user_repo.session.query(User).filter_by(id=user_id).first()
     if user:
         db.delete(user)
 
-    # Usuń pracownika
     db.delete(employee)
 
     db.commit()
