@@ -16,6 +16,8 @@ from app.routes.user_routes import user_bp
 from app.models.user_models import user
 from app.models.organization_models.organization_model import OrganizationModel
 from app.models.organization_models.employee import Employee
+from app.models.owner_models.owner import Owner
+
 app = Flask(__name__)
 swagger = Swagger(app)
 app.register_blueprint(user_bp, url_prefix='/user')
@@ -42,6 +44,7 @@ def index():
 user_bp = Blueprint('user', __name__)
 organization_bp = Blueprint('organization', __name__)
 employee_bp = Blueprint('employee', __name__)
+owner_bp = Blueprint('owner', __name__)
 if __name__ == "__main__":
     print('Tabele')
     print(Model.metadata.tables.keys())

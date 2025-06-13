@@ -1,11 +1,17 @@
-from dataclasses import dataclass
-from typing import Optional
 
+from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 from app.models.owner_models.owner_model import OwnerModel
-from app.models.user_models.user import User
 
 
-@dataclass
 class Owner(OwnerModel):
-    user_id: int = 0
-    user: Optional[User] = None
+    __tablename__ = "owner"
+    user_id: int = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="owners")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id
+        }
+    pass
