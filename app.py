@@ -17,6 +17,8 @@ from app.models.user_models import user
 from app.models.organization_models.organization_model import OrganizationModel
 from app.models.organization_models.employee import Employee
 from app.models.owner_models.owner import Owner
+from app.models.animal_models.animal import Animal
+from app.models.animal_models.type import Type
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -41,6 +43,7 @@ def index():
     server_name = row['server_name']
     database_name = row['database_name']
     return f"Server: {server_name}, Database: {database_name}"
+
 user_bp = Blueprint('user', __name__)
 organization_bp = Blueprint('organization', __name__)
 employee_bp = Blueprint('employee', __name__)
