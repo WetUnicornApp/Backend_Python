@@ -39,13 +39,28 @@ def create():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
-@owner_bp.route('/edit', methods=['POST'])
-def edit():
-    """
-    Expect form content
-    Return 200 or 400
-    """
-    return ApiResponse('OK', True, {}).return_response(), 201
+@owner_bp.route('/edit/<int:user_id>', methods=['PUT'])
+def edit(user_id):
+    data = request.get_json()
+    db = SessionLocal()
+    user_repo = UserRepository.instance(db)
+    owner_repo = OwnerRepository.instance(db)
+
+    user = user_repo.get_by('id', user_id)
+    if user is None:
+        return ApiResponse("User not found", False).return_response(), 404
+    new_email = data.get("email")
+    if new_email and new_email != user.email:
+        if user_repo.get_by("email", new_email):
+            return ApiResponse("Email already in use", False).return_response(), 400
+        user.email = new_email
+    if "first_name" in data:
+        user.first_name = data["first_name"]
+    if "last_name" in data:
+        user.last_name = data["last_name"]
+    db.commit()
+
+    return ApiResponse("User updated successfully", True, user.to_dict()).return_response(), 200
 
 
 @owner_bp.route('/delete', methods=['DELETE'])
@@ -59,8 +74,17 @@ def delete():
 
 @owner_bp.route('/list', methods=['GET'])
 def list():
-    """
-    Expect nothing
-    Return 201 or 400
-    """
-    return ApiResponse('OK', True, {}).return_response(), 201
+    db = SessionLocal()
+    repo = OwnerRepository(db)
+    owners=repo.session.query(Owner).all()
+    result =[]
+    for owner in owners:
+        user = db.query(User).filter_by(id=owner.user_id).first()
+        result.append({
+            'id': owner.id,
+            'user_id': owner.user_id,
+            "email": user.email if user else None,
+            "first_name": user.first_name if user else None,
+            "last_name": user.last_name if user else None
+        })
+    return ApiResponse("Success", True, result).return_response(), 200
