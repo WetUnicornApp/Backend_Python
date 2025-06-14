@@ -128,7 +128,7 @@ def list():
     return ApiResponse("Success", True, result).return_response(), 200
 
 
-@employee_bp.route('/information/<int:user_id>', methods=['GET'])
+@employee_bp.route('/view/<int:user_id>', methods=['GET'])
 def get_employee(user_id):
     db = SessionLocal()
     emp_repo = EmployeeRepository(db)

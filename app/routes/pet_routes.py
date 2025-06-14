@@ -122,7 +122,7 @@ def list():
         })
     return ApiResponse("Success", True, result).return_response(), 200
 
-@pet_bp.route('/information/<int:animal_id>', methods=['GET'])
+@pet_bp.route('/view/<int:animal_id>', methods=['GET'])
 def get_animal(animal_id):
     db = SessionLocal()
     repo = AnimalRepository(db)

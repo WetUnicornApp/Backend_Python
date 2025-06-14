@@ -6,4 +6,5 @@ from app.models.model import Model
 @dataclass
 class CalendarModel(Model):
     """base class for objects from this directory"""
+    __abstract__ = True
     pass
