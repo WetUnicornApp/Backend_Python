@@ -72,7 +72,7 @@ def delete(owner_id):
     repo = OwnerRepository(db)
     repo_user = UserRepository(db)
 
-    owner = repo.session.query(Owner).filter_by(user_id=owner_id).first()
+    owner = repo.session.query(Owner).filter_by(id=owner_id).first()
     if not owner:
         return ApiResponse("OWNER_NOT_FOUND", False).return_response(), 404
     user = repo_user.session.query(User).filter_by(id=owner_id).first()
@@ -87,19 +87,35 @@ def delete(owner_id):
 
 @owner_bp.route('/list', methods=['GET'])
 def list():
+    s = request.args.get('s')
     db = SessionLocal()
     repo = OwnerRepository(db)
     owners = repo.session.query(Owner).all()
-    result = []
-    for owner in owners:
-        user = db.query(User).filter_by(id=owner.user_id).first()
-        result.append({
-            'id': owner.id,
-            'user_id': owner.user_id,
-            "email": user.email if user else None,
-            "first_name": user.first_name if user else None,
-            "last_name": user.last_name if user else None
-        })
+
+    if s == '1':
+        result = []
+        for owner in owners:
+            user = db.query(User).filter_by(id=owner.user_id).first()
+            if user:
+                full_name = f"{user.first_name} {user.last_name} ({user.email})"
+            else:
+                full_name = "Unknown"
+            result.append({
+                "value": owner.id,
+                "text": full_name
+            })
+    else:
+        result = []
+        for owner in owners:
+            user = db.query(User).filter_by(id=owner.user_id).first()
+            result.append({
+                'id': owner.id,
+                'user_id': owner.user_id,
+                "email": user.email if user else None,
+                "first_name": user.first_name if user else None,
+                "last_name": user.last_name if user else None
+            })
+
     return ApiResponse("Success", True, result).return_response(), 200
 
 

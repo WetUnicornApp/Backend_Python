@@ -1,10 +1,10 @@
-
 from flask import Blueprint, request
 
 from app.models.animal_models.animal import Animal
 from app.models.animal_models.gender import Gender
 from app.models.animal_models.type import Type
 from app.models.owner_models.owner import Owner
+from app.models.user_models.user import User
 from app.repositories.animal_repository import AnimalRepository
 from app.repositories.owner_repository import OwnerRepository
 from app.schemas.animal_schemas import AnimalSchema
@@ -12,9 +12,7 @@ from app.services.service import Service
 from app.utils.api_response import ApiResponse
 from config.database import SessionLocal
 
-
 pet_bp = Blueprint('pet', __name__)
-
 
 from flask import request, jsonify
 from datetime import datetime
@@ -90,37 +88,41 @@ def delete(animal_id):
     return response.return_response(), 200
 
 
-
 @pet_bp.route('/gender-list', methods=['GET'])
 def gender_list():
-    return ApiResponse('OK', True, {}).return_response(), 201
+    data = [{"value": key, "text": value} for key, value in Gender.__members__.items()]
+    return ApiResponse('OK', True, data).return_response(), 201
 
 
 @pet_bp.route('/type-list', methods=['GET'])
 def type_list():
-    return ApiResponse('OK', True, {}).return_response(), 201
+    data = [{"value": key, "text": value} for key, value in Type.__members__.items()]
+    return ApiResponse('OK', True, data).return_response(), 201
 
 
 @pet_bp.route('/list', methods=['GET'])
 def list():
     db = SessionLocal()
     repo = AnimalRepository(db)
-    animal = repo.session.query(Animal).all()
+    animal = repo.session.query(Animal).filter_by(is_deleted=0).all()
 
     result = []
 
     for an in animal:
         owner = db.query(Owner).filter_by(id=an.owner_id).first()
+        user = db.query(User).filter_by(id=owner.user_id).first()
         result.append({
             "id": an.id,
             "name": an.name,
             "description": an.description,
-            "date_of_birth":an.date_of_birth,
+            "date_of_birth": an.date_of_birth.strftime('%d.%m.%Y'),
             "gender": an.gender,
             "type": an.type,
-            "owner": owner.id,
+            "owner": user.first_name + ' ' + user.last_name,
+            "owner_id": owner.id,
         })
     return ApiResponse("Success", True, result).return_response(), 200
+
 
 @pet_bp.route('/view/<int:animal_id>', methods=['GET'])
 def get_animal(animal_id):
@@ -133,16 +135,16 @@ def get_animal(animal_id):
         return ApiResponse("Animal not found", False, {}).return_response(), 404
 
     owner = db.query(Owner).filter_by(id=animal.owner_id).first()
+    user = db.query(User).filter_by(id=owner.user_id).first()
 
     result = {
         "id": animal.id,
         "name": animal.name,
         "description": animal.description,
-        "date_of_birth": animal.date_of_birth,
+        "date_of_birth": animal.date_of_birth.strftime('%Y-%m-%d'),
         "gender": animal.gender,
         "type": animal.type,
-        "owner": owner.id
-
+        "owner_id": owner.id,
     }
 
     return ApiResponse("Success", True, result).return_response(), 200
