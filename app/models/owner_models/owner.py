@@ -8,7 +8,7 @@ class Owner(OwnerModel):
     __tablename__ = "owner"
     user_id: int = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="owners")
-
+    animals = relationship("Animal", back_populates="owner")
     def to_dict(self):
         return {
             "id": self.id,

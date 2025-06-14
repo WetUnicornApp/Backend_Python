@@ -1,15 +1,48 @@
-from flask import Blueprint, request, jsonify
 
+from flask import Blueprint, request
+
+from app.models.animal_models.animal import Animal
+from app.models.animal_models.gender import Gender
+from app.models.animal_models.type import Type
+from app.repositories.animal_repository import AnimalRepository
+from app.repositories.owner_repository import OwnerRepository
+from app.schemas.animal_schemas import AnimalSchema
+from app.services.service import Service
 from app.utils.api_response import ApiResponse
+from config.database import SessionLocal
 
-# from .app.utils.api_response import ApiResponse
+
+pet_bp = Blueprint('pet', __name__)
+
+
+from flask import request, jsonify
+from datetime import datetime
+
+from flask import Blueprint, request, jsonify
+from datetime import datetime
+
+from app.models.animal_models.animal import Animal
+from app.models.animal_models.gender import Gender
+from app.models.animal_models.type import Type
+from config.database import SessionLocal
 
 pet_bp = Blueprint('pet', __name__)
 
 
 @pet_bp.route('/create', methods=['POST'])
 def create():
-    return ApiResponse('OK', True, {}).return_response(), 201
+    data = request.get_json()
+    db = SessionLocal()
+    repo = OwnerRepository(db)
+    owner = repo.get_by('id', data.get('owner_id'))
+    if not owner:
+        return ApiResponse({"error": "Owner not found"}, success=False).return_response(), 404
+
+    service = Service(Animal, AnimalSchema, AnimalRepository)
+
+    response = service.create(data)
+    status_code = 201 if response.success else 400
+    return response.return_response(), status_code
 
 
 @pet_bp.route('/edit', methods=['POST'])

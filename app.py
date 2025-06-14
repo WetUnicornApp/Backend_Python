@@ -18,7 +18,7 @@ from app.models.organization_models.organization_model import OrganizationModel
 from app.models.organization_models.employee import Employee
 from app.models.owner_models.owner import Owner
 from app.models.animal_models.animal import Animal
-from app.models.animal_models.type import Type
+
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -48,6 +48,7 @@ user_bp = Blueprint('user', __name__)
 organization_bp = Blueprint('organization', __name__)
 employee_bp = Blueprint('employee', __name__)
 owner_bp = Blueprint('owner', __name__)
+pet_bp = Blueprint('pet', __name__)
 if __name__ == "__main__":
     print('Tabele')
     print(Model.metadata.tables.keys())

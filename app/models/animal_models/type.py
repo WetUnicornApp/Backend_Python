@@ -1,12 +1,9 @@
-from sqlalchemy import Column, Integer, String
 
-from sqlalchemy import Column
+from enum import Enum
+class Type(str, Enum):
+    CAT = "CAT"
+    DOG = "DOG"
 
-from app.models.animal_models.animal_model import AnimalModel
 
 
-class Type(AnimalModel):
-    """cat, dog ..."""
-    __tablename__ = 'types'
-    name = Column(String(100), default='')
 
