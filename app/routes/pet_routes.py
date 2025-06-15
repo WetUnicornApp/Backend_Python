@@ -103,25 +103,36 @@ def type_list():
 
 @pet_bp.route('/list', methods=['GET'])
 def list():
+    s = request.args.get('s')
     db = SessionLocal()
     repo = AnimalRepository(db)
     animal = repo.session.query(Animal).filter_by(is_deleted=0).all()
 
     result = []
 
-    for an in animal:
-        owner = db.query(Owner).filter_by(id=an.owner_id).first()
-        user = db.query(User).filter_by(id=owner.user_id).first()
-        result.append({
-            "id": an.id,
-            "name": an.name,
-            "description": an.description,
-            "date_of_birth": an.date_of_birth.strftime('%d.%m.%Y'),
-            "gender": an.gender,
-            "type": an.type,
-            "owner": user.first_name + ' ' + user.last_name,
-            "owner_id": owner.id,
-        })
+    if s == '1':
+        result = []
+        for an in animal:
+            owner = db.query(Owner).filter_by(id=an.owner_id).first()
+            user = db.query(User).filter_by(id=owner.user_id).first()
+            result.append({
+                "value": an.id,
+                "text": an.name + ' (' + user.first_name + ' ' + user.last_name + ' ' + user.email + ')',
+            })
+    else:
+        for an in animal:
+            owner = db.query(Owner).filter_by(id=an.owner_id).first()
+            user = db.query(User).filter_by(id=owner.user_id).first()
+            result.append({
+                "id": an.id,
+                "name": an.name,
+                "description": an.description,
+                "date_of_birth": an.date_of_birth.strftime('%d.%m.%Y'),
+                "gender": an.gender,
+                "type": an.type,
+                "owner": user.first_name + ' ' + user.last_name,
+                "owner_id": owner.id,
+            })
     return ApiResponse("Success", True, result).return_response(), 200
 
 

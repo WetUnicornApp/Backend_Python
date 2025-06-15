@@ -103,20 +103,34 @@ def list():
     db = SessionLocal()
     repo = EmployeeRepository(db)
     employees = repo.session.query(Employee).filter_by(is_deleted=0).all()
+    s = request.args.get('s')
 
     result = []
-    for emp in employees:
-        user = db.query(User).filter_by(id=emp.user_id).first()
-        org = db.query(OrganizationModel).filter_by(id=emp.organization_id).first() if emp.organization_id else None
 
-        result.append({
-            "id": emp.id,
-            "user_id": emp.user_id,
-            "email": user.email if user else None,
-            "first_name": user.first_name if user else None,
-            "last_name": user.last_name if user else None,
-            "organization_name": org.name if org else None,
-        })
+    if s == '1':
+        for emp in employees:
+            user = db.query(User).filter_by(id=emp.user_id).first()
+            if user:
+                full_name = f"{user.first_name} {user.last_name} ({user.email})"
+            else:
+                full_name = "Unknown"
+            result.append({
+                "value": emp.id,
+                "text": full_name
+            })
+    else:
+        for emp in employees:
+            user = db.query(User).filter_by(id=emp.user_id).first()
+            org = db.query(OrganizationModel).filter_by(id=emp.organization_id).first() if emp.organization_id else None
+
+            result.append({
+                "id": emp.id,
+                "user_id": emp.user_id,
+                "email": user.email if user else None,
+                "first_name": user.first_name if user else None,
+                "last_name": user.last_name if user else None,
+                "organization_name": org.name if org else None,
+            })
 
     return ApiResponse("Success", True, result).return_response(), 200
 
