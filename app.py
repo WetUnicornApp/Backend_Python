@@ -18,6 +18,10 @@ from app.models.organization_models.organization_model import OrganizationModel
 from app.models.organization_models.employee import Employee
 from app.models.owner_models.owner import Owner
 from app.models.animal_models.animal import Animal
+from app.models.calendar_models.calendar import Calendar
+from app.models.visit_models.visit import Visit
+from app.models.visit_models.visit_animal import VisitAnimal
+from app.models.visit_models.visit_employee import VisitEmployee
 
 
 app = Flask(__name__)

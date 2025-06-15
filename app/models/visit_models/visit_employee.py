@@ -1,18 +1,21 @@
 from dataclasses import dataclass, field
 
+from sqlalchemy import Column, Integer, ForeignKey
+
 from app.models.organization_models.employee import Employee
 from app.models.visit_models.visit import Visit
 from app.models.visit_models.visit_model import VisitModel
 
 
-@dataclass
+
 class VisitEmployee(VisitModel):
-    """
-        a class combining a visit with an employee
-    """
+    __tablename__ = "visit_employees"
 
-    visit_id: int = field(default=0)
-    employee_id: int = field(default=0)
+    visit_id = Column(Integer, ForeignKey("visits.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=True)
 
-    visit: Visit = field(default=None)
-    employee: Employee = field(default=None)
+    def to_dict(self):
+        return {
+            "visit_id": self.visit_id,
+            "employee_id": self.employee_id,
+        }

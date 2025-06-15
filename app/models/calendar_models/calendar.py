@@ -1,15 +1,19 @@
-from dataclasses import field
-from datetime import datetime
 
-from attr import dataclass
+from datetime import datetime, date
+
+
+from sqlalchemy import Column, DateTime
 
 from app.models.calendar_models.calendar_model import CalendarModel
 
 
-@dataclass
 class Calendar(CalendarModel):
-    """
-    collective class for time organization
-    """
-    datetime_created: datetime = field(default=datetime.now())
-    datetime_planned: datetime = field(default=datetime.now())
+    __tablename__ = "calendar"
+    datetime_created = Column(DateTime, default=datetime)
+    datetime_planned = Column(DateTime, default=datetime)
+    def to_dict(self):
+        return {
+            "datetime_created": self.datetime_created,
+            "datetime_planned": self.datetime_planned,
+        }
+

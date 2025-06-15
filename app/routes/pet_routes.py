@@ -7,7 +7,8 @@ from app.models.owner_models.owner import Owner
 from app.models.user_models.user import User
 from app.repositories.animal_repository import AnimalRepository
 from app.repositories.owner_repository import OwnerRepository
-from app.schemas.animal_schemas import AnimalSchema
+from app.schemas.animal_schema import AnimalSchema
+
 from app.services.service import Service
 from app.utils.api_response import ApiResponse
 from config.database import SessionLocal
