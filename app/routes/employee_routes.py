@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from http.client import responses
 
@@ -27,7 +26,7 @@ def create():
 
     repo_user = UserRepository.instance(db)
     if repo_user.get_by('email', data.get('email')):
-        return ApiResponse("Email already registered", False).return_response(), 400
+        return ApiResponse("EMAIL_ALREADY_REGISTERED", False).return_response(), 400
 
     service = Service(User, RegisterSchema, UserRepository)
     response = service.create(data)
@@ -38,10 +37,10 @@ def create():
 
     organization_id = data.get('organization_id')
     if not organization_id:
-        return ApiResponse("Organization ID is required", False).return_response(), 400
+        return ApiResponse("ORGANIZATION_ID_REQUIRED", False).return_response(), 400
 
     repo_employee = EmployeeRepository(db)
-    employee = Employee(user_id=user.id,organization_id=organization_id)
+    employee = Employee(user_id=user.id, organization_id=organization_id)
     response = repo_employee.create(employee)
     if not response.success:
         return ApiResponse(response.message, False).return_response(), 400
@@ -59,7 +58,7 @@ def edit(user_id):
 
     user = user_repo.get_by("id", user_id)
     if not user:
-        return ApiResponse("User not found", False).return_response(), 404
+        return ApiResponse("USER_NOT_FOUND", False).return_response(), 404
 
     new_email = data.get("email")
     if new_email and new_email != user.email:
@@ -73,7 +72,7 @@ def edit(user_id):
     if "organization_id" in data:
         org = org_repo.get_by("id", data["organization_id"])
         if not org:
-            return ApiResponse("Organization not found", False).return_response(), 404
+            return ApiResponse("ORGANIZATION_NOT_FOUND", False).return_response(), 404
 
         employee = employee_repo.get_by("user_id", user.id)
         if not employee:
@@ -83,18 +82,17 @@ def edit(user_id):
 
     db.commit()
 
-    return ApiResponse("User updated successfully", True, user.to_dict()).return_response(), 200
+    return ApiResponse("USER_UPDATED_SUCCESSFULLY", True, user.to_dict()).return_response(), 200
 
 
-@employee_bp.route('/delete/<int:user_id>', methods=['DELETE'])
-def delete(user_id):
+@employee_bp.route('/delete/<int:employee_id>', methods=['DELETE'])
+def delete(employee_id):
     db = SessionLocal()
     repo = EmployeeRepository(db)
-    user_repo = UserRepository(db)
 
-    employee = repo.session.query(Employee).filter_by(user_id=user_id).first()
+    employee = repo.session.query(Employee).filter_by(id=employee_id).first()
     if not employee:
-        return ApiResponse("Employee not found", False).return_response(), 404
+        return ApiResponse("EMPLOYEE_NOT_FOUND", False).return_response(), 404
 
     response = repo.delete(employee)
     return response.return_response(), 200
@@ -104,7 +102,7 @@ def delete(user_id):
 def list():
     db = SessionLocal()
     repo = EmployeeRepository(db)
-    employees = repo.session.query(Employee).all()
+    employees = repo.session.query(Employee).filter_by(is_deleted=0).all()
 
     result = []
     for emp in employees:
@@ -117,24 +115,24 @@ def list():
             "email": user.email if user else None,
             "first_name": user.first_name if user else None,
             "last_name": user.last_name if user else None,
-            "organization": org.name if org else None,
+            "organization_name": org.name if org else None,
         })
 
     return ApiResponse("Success", True, result).return_response(), 200
 
 
-@employee_bp.route('/view/<int:user_id>', methods=['GET'])
-def get_employee(user_id):
+@employee_bp.route('/view/<int:employee_id>', methods=['GET'])
+def get_employee(employee_id):
     db = SessionLocal()
     emp_repo = EmployeeRepository(db)
     user_repo = UserRepository(db)
     org_repo = OrganisationRepository(db)
 
-    employee = emp_repo.session.query(Employee).filter_by(user_id=user_id).first()
+    employee = emp_repo.session.query(Employee).filter_by(id=employee_id).first()
     if not employee:
-        return ApiResponse("Employee not found", False).return_response(), 404
+        return ApiResponse("EMPLOYEE_NOT_FOUND", False).return_response(), 404
 
-    user = user_repo.session.query(User).filter_by(id=user_id).first()
+    user = user_repo.session.query(User).filter_by(id=employee.user_id).first()
     organization = None
     if employee.organization_id:
         organization = org_repo.session.query(OrganizationModel).filter_by(id=employee.organization_id).first()

@@ -1,4 +1,3 @@
-
 from flask import Blueprint, request
 from app.models.organization_models.organization_model import OrganizationModel
 from app.repositories.organization_repository import OrganisationRepository
@@ -9,6 +8,7 @@ from config.database import SessionLocal
 
 organization_bp = Blueprint('organization', __name__)
 
+
 @organization_bp.route('/create', methods=['POST'])
 def create():
     data = request.get_json()
@@ -16,68 +16,85 @@ def create():
     repo = OrganisationRepository.instance(db)
 
     if repo.get_by('name', data['name']):
-        return ApiResponse('Name is already in use',False).return_response(), 400
+        return ApiResponse('Name is already in use', False).return_response(), 400
 
-    service = Service(OrganizationModel,OrganizationSchema, OrganisationRepository)
+    service = Service(OrganizationModel, OrganizationSchema, OrganisationRepository)
     response = service.create(data)
-    return ApiResponse(response,True).return_response()
+    return ApiResponse(response, True).return_response()
 
-@organization_bp.route('/show', methods=['GET'])
-def show():
-    name = request.args.get('name')
-    if not name:
-        return ApiResponse('Name is required',False).return_response(),400
+
+@organization_bp.route('/view', methods=['GET'])
+@organization_bp.route('/view/<int:organization_id>', methods=['GET'])
+def get_organizations(organization_id):
     db = SessionLocal()
-    repo = OrganisationRepository.instance(db)
-    organization = repo.get_by('name', name)
-    if not organization:
-        return ApiResponse('Organization not found', False).return_response(), 404
+    org_rep = OrganisationRepository(db)
 
-    organization_data={
-        'name': organization.name,
-        'address': organization.address,
+    org = org_rep.session.query(OrganizationModel).filter_by(id=organization_id).first()
+
+    result = {
+        "id": org.id,
+        "name": org.name,
+        "address": org.address,
     }
-    return ApiResponse(organization_data,True).return_response(),200
+
+    return ApiResponse("OK", True, result).return_response(), 200
 
 
-@organization_bp.route('/delete', methods=['DELETE'])
-def delete():
-    data = request.get_json()
-    if not data or not data.get('name'):
-        return ApiResponse('No name provided', False).return_response(), 400
-
+@organization_bp.route('/delete/<int:organization_id>', methods=['DELETE'])
+def delete(organization_id):
     db = SessionLocal()
-    repo = OrganisationRepository.instance(db)
-    organization = repo.get_by('name', data['name'])
-    if not organization:
-        return ApiResponse('Organization not found', False).return_response(), 404
+    repo = OrganisationRepository(db)
 
-    repo.delete(organization)
+    org = repo.session.query(OrganizationModel).filter_by(id=organization_id).first()
+    if not org:
+        return ApiResponse("ORGANIZATION_NOT_FOUND", False).return_response(), 404
+    db.delete(org)
+    db.commit()
+    return ApiResponse('OK', True, {}).return_response(), 201
+
+
+@organization_bp.route('/edit/<int:organization_id>', methods=['PUT'])
+def edit(organization_id):
+    data = request.get_json()
+    db = SessionLocal()
+    org_rep = OrganisationRepository.instance(db)
+    org = org_rep.get_by('id', organization_id)
+    if not org:
+        return ApiResponse("ORGANIZATION_NOT_FOUND", False).return_response(), 404
+
+    if "name" in data:
+        org.name = data["name"]
+    if "last_name" in data:
+        org.address = data["address"]
     db.commit()
 
-    return ApiResponse(f'Organization "{data["name"]}" deleted successfully', True).return_response(), 200
+    return ApiResponse("OK", True, org.to_dict()).return_response(), 200
 
-@organization_bp.route('/update', methods=['PUT'])
-def update():
-    data = request.get_json()
-    if not data or 'name' not in data:
-        return ApiResponse('No organization name provided', False).return_response(), 400
 
+@organization_bp.route('/list', methods=['GET'])
+def organizations():
+    s = request.args.get('s')
     db = SessionLocal()
-    repo = OrganisationRepository.instance(db)
-    organization = repo.get_by('name', data['name'])
+    repo = OrganisationRepository(db)
+    arr = repo.session.query(OrganizationModel).filter_by(is_deleted=0).all()
 
-    if not organization:
-        return ApiResponse('Organization not found', False).return_response(), 404
+    result = []
+    for org in arr:
 
-    if 'address' in data:
-        organization.address = data['address']
+        if s == '1':
+            result = []
+            for item in arr:
+                result.append({
+                    "value": item.id,
+                    "text": item.name
+                })
+        else:
+            result = []
+            result.append({
+                "id": org.id,
+                "name": org.name,
+                "address": org.address,
 
-    if 'new_name' in data:
-        organization.name = data['new_name']
+            })
 
-    db.commit()
-    return ApiResponse('Organization updated successfully', True).return_response(), 200
-
-
-
+    return ApiResponse("Success", True, result).return_response(), 200
