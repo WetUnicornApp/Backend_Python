@@ -1,5 +1,6 @@
 
 from datetime import datetime
+from http.client import responses
 
 from flask import Blueprint, request, jsonify
 from sqlalchemy import DateTime
@@ -95,14 +96,8 @@ def delete(user_id):
     if not employee:
         return ApiResponse("Employee not found", False).return_response(), 404
 
-    user = user_repo.session.query(User).filter_by(id=user_id).first()
-    if user:
-        db.delete(user)
-
-    db.delete(employee)
-
-    db.commit()
-    return ApiResponse('OK', True, {}).return_response(), 201
+    response = repo.delete(employee)
+    return response.return_response(), 200
 
 
 @employee_bp.route('/list', methods=['GET'])
