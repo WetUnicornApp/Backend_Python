@@ -73,7 +73,7 @@ def create_visit():
 
                 if conflicting:
                     return ApiResponse(
-                        f"Pracownik (id={employee_id}) ma już zaplanowaną wizytę na {datetime_planned}.",
+                        f"Employee (id={employee_id}) already has a scheduled visit at {datetime_planned}.",
                         False
                     ).return_response(), 400
 
@@ -125,27 +125,138 @@ def create_visit():
         session.rollback()
         return ApiResponse(f"Error creating visit: {str(e)}",False).return_response(), 400
 
-    finally:
-        session.close()
 
 
 
-@visit_bp.route('/edit', methods=['POST'])
-def edit():
-    """
-        Expect form content
-        Return 200 or 400
-        """
-    return ApiResponse('OK', True, {}).return_response(), 201
+
+@visit_bp.route('/edit/<int:visit_id>', methods=['PUT'])
+def edit(visit_id):
+    db = SessionLocal()
+
+    try:
+        data = request.get_json()
+
+        visit = db.query(Visit).filter_by(id=visit_id).first()
+        if not visit:
+            return ApiResponse(f"Visit with ID {visit_id} does not exist.", False).return_response(), 404
+
+        calendar = db.query(Calendar).filter_by(id=visit.calendar_id).first()
+        if not calendar:
+            return ApiResponse("Associated calendar not found.", False).return_response(), 404
+
+        visit.name = data.get("name", visit.name)
+        visit.description = data.get("description", visit.description)
+
+        new_datetime = data.get("datetime_planned")
+        if new_datetime:
+            if isinstance(new_datetime, str):
+                new_datetime = datetime.fromisoformat(new_datetime)
+
+            employee_id = data.get("employee_id")
+            if employee_id:
+                existing_visit_ids = db.query(VisitEmployee.visit_id).filter_by(employee_id=employee_id).all()
+                visit_ids = [v[0] for v in existing_visit_ids]
+
+                if visit_ids:
+                    conflicting = db.query(Visit).join(Calendar).filter(
+                        Visit.id.in_(visit_ids),
+                        Calendar.datetime_planned == new_datetime,
+                        Visit.id != visit.id
+                    ).first()
+
+                    if conflicting:
+                        return ApiResponse(
+                            f"Pracownik (id={employee_id}) ma już wizytę na {new_datetime}.",
+                            False
+                        ).return_response(), 400
+
+            calendar.datetime_planned = new_datetime
+
+        if "employee_id" in data:
+            employee_id = data["employee_id"]
+            visit_employee = db.query(VisitEmployee).filter_by(visit_id=visit.id).first()
+
+            if visit_employee:
+                visit_employee.employee_id = employee_id
+            else:
+                visit_employee = VisitEmployee(visit_id=visit.id, employee_id=employee_id)
+                visit_employee_repo = VisitEmployeeRepository(db)
+                visit_employee_repo.create(visit_employee)
+
+        if "animal_id" in data:
+            animal_id = data["animal_id"]
+            visit_animal = db.query(VisitAnimal).filter_by(visit_id=visit.id).first()
+
+            if visit_animal:
+                visit_animal.animal_id = animal_id
+            else:
+                visit_animal = VisitAnimal(visit_id=visit.id, animal_id=animal_id)
+                visit_animal_repo = VisitAnimalRepository(db)
+                visit_animal_repo.create(visit_animal)
+
+        db.commit()
+
+        visit_employee = db.query(VisitEmployee).filter_by(visit_id=visit.id).first()
+        visit_animal = db.query(VisitAnimal).filter_by(visit_id=visit.id).first()
+
+        response = {
+            "visit": visit.to_dict(),
+            "calendar": calendar.to_dict(),
+            "employee_id": visit_employee.employee_id if visit_employee else None,
+            "animal_id": visit_animal.animal_id if visit_animal else None
+        }
+
+        return ApiResponse(response, True).return_response(), 200
+
+    except Exception as e:
+        db.rollback()
+        return ApiResponse(f"Error editing the visit: {str(e)}", False).return_response(), 400
 
 
-@visit_bp.route('/delete', methods=['DELETE'])
-def delete():
-    """
-        Expect visit identifier
-        Return 200 or 400
-        """
-    return ApiResponse('OK', True, {}).return_response(), 201
+
+@visit_bp.route('/delete/<int:calender_id>', methods=['DELETE'])
+def delete(calender_id):
+    db = SessionLocal()
+
+    try:
+        repo = CalenderRepository(db)
+        vist_repo = VisitRepository(db)
+        visit_emp_rep = VisitEmployeeRepository(db)
+        vist_animal_rep = VisitAnimalRepository(db)
+
+        calendar = db.query(Calendar).filter_by(id=calender_id).first()
+        if not calendar:
+            return ApiResponse(f"Calendar with ID {calender_id} does not exist.", False).return_response(), 404
+
+
+        visit = db.query(Visit).filter_by(calendar_id=calendar.id).first()
+        if not visit:
+            return ApiResponse(f"No visit associated with calendar ID {calender_id}.", False).return_response(), 404
+
+
+        visit_emp = db.query(VisitEmployee).filter_by(visit_id=visit.id).first()
+
+        visit_animal = db.query(VisitAnimal).filter_by(visit_id=visit.id).first()
+
+        if visit_animal:
+            vist_animal_rep.delete(visit_animal)
+
+        if visit_emp:
+            visit_emp_rep.delete(visit_emp)
+
+        vist_repo.delete(visit)
+        repo.delete(calendar)
+
+        return ApiResponse("The visit and related data have been marked as deleted.", True).return_response(), 200
+
+
+    except Exception as e:
+        db.rollback()
+        return ApiResponse(f"Error deleting the visit: {str(e)}", False).return_response(), 400
+
+
+
+
 
 
 @visit_bp.route('/list', methods=['GET'])
@@ -173,8 +284,7 @@ def list():
     except Exception as e:
         return ApiResponse(f"Error fetching visits: {str(e)}", False).return_response(), 400
 
-    finally:
-        db.close()
+
 
 @visit_bp.route('/view/<int:visit_id>', methods=['GET'])
 def get_visit(visit_id):
@@ -183,7 +293,8 @@ def get_visit(visit_id):
     try:
         visit = db.query(Visit).filter_by(id=visit_id).first()
         if not visit:
-            return ApiResponse(f"Wizyta o ID {visit_id} nie istnieje.", False).return_response(), 404
+            return ApiResponse(f"Visit with ID {visit_id} does not exist.", False).return_response(), 404
+
 
         calendar = db.query(Calendar).filter_by(id=visit.calendar_id).first()
 
@@ -195,10 +306,9 @@ def get_visit(visit_id):
             "employee_id": visit_employee.employee_id if visit_employee else None
         }
 
+
         return ApiResponse(result, True).return_response(), 200
 
     except Exception as e:
         return ApiResponse(f"Error fetching visit: {str(e)}", False).return_response(), 400
 
-    finally:
-        db.close()
