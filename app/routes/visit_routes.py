@@ -150,11 +150,55 @@ def delete():
 
 @visit_bp.route('/list', methods=['GET'])
 def list():
-    """
-        Expect nothing
-        Return 200 or 400
-        """
-    return ApiResponse('OK', True, [
-        {'employee': 'Anna Kowalska', 'owner': "Jan Nowak", 'pet': "Fafik", 'name': 'name name', 'description': 'lorem',
-         'date': datetime.now().strftime('%d.%m.%Y'),
-         'time': datetime.now().strftime('%H:%M')}]).return_response(), 200
+    db = SessionLocal()
+
+    try:
+        visit_repo = VisitRepository(db)
+        visits = db.query(Visit).all()
+
+        result = []
+
+        for visit in visits:
+            calendar = db.query(Calendar).filter_by(id=visit.calendar_id).first()
+            visit_employee = db.query(VisitEmployee).filter_by(visit_id=visit.id).first()
+
+            result.append({
+                "visit": visit.to_dict(),
+                "calendar": calendar.to_dict() if calendar else None,
+                "employee_id": visit_employee.employee_id if visit_employee else None
+            })
+
+        return ApiResponse(result, True).return_response(), 200
+
+    except Exception as e:
+        return ApiResponse(f"Error fetching visits: {str(e)}", False).return_response(), 400
+
+    finally:
+        db.close()
+
+@visit_bp.route('/view/<int:visit_id>', methods=['GET'])
+def get_visit(visit_id):
+    db = SessionLocal()
+
+    try:
+        visit = db.query(Visit).filter_by(id=visit_id).first()
+        if not visit:
+            return ApiResponse(f"Wizyta o ID {visit_id} nie istnieje.", False).return_response(), 404
+
+        calendar = db.query(Calendar).filter_by(id=visit.calendar_id).first()
+
+        visit_employee = db.query(VisitEmployee).filter_by(visit_id=visit.id).first()
+
+        result = {
+            "visit": visit.to_dict(),
+            "calendar": calendar.to_dict() if calendar else None,
+            "employee_id": visit_employee.employee_id if visit_employee else None
+        }
+
+        return ApiResponse(result, True).return_response(), 200
+
+    except Exception as e:
+        return ApiResponse(f"Error fetching visit: {str(e)}", False).return_response(), 400
+
+    finally:
+        db.close()
