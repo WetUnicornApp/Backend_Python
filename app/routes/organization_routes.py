@@ -79,22 +79,21 @@ def organizations():
     arr = repo.session.query(OrganizationModel).filter_by(is_deleted=0).all()
 
     result = []
-    for org in arr:
 
-        if s == '1':
-            result = []
-            for item in arr:
-                result.append({
-                    "value": item.id,
-                    "text": item.name
-                })
-        else:
-            result = []
+    if s == '1':
+        # Prosta mapa na value/text
+        for item in arr:
+            result.append({
+                "value": item.id,
+                "text": item.name
+            })
+    else:
+        for org in arr:
             result.append({
                 "id": org.id,
                 "name": org.name,
                 "address": org.address,
-
             })
 
     return ApiResponse("Success", True, result).return_response(), 200
+

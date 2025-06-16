@@ -17,7 +17,7 @@ def register():
     db = SessionLocal()
     repo = UserRepository.instance(db)
     if repo.get_by('email', data.get('email')):
-        return ApiResponse("Email already registered", False).return_response(),400
+        return ApiResponse("EMAIL_ALREADY_REGISTER", False).return_response(),400
 
     service = Service(User, RegisterSchema, UserRepository)
     response = service.create(data)
