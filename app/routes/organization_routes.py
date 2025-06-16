@@ -64,7 +64,7 @@ def edit(organization_id):
 
     if "name" in data:
         org.name = data["name"]
-    if "last_name" in data:
+    if "address" in data:
         org.address = data["address"]
     db.commit()
 
@@ -81,7 +81,6 @@ def organizations():
     result = []
 
     if s == '1':
-        # Prosta mapa na value/text
         for item in arr:
             result.append({
                 "value": item.id,

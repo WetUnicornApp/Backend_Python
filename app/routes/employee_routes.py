@@ -48,41 +48,40 @@ def create():
     return ApiResponse('OK', True, {}).return_response(), 201
 
 
-@employee_bp.route('/edit/<int:user_id>', methods=['PUT'])
-def edit(user_id):
+@employee_bp.route('/edit/<int:employee_id>', methods=['PUT'])
+def edit(employee_id):
     data = request.get_json()
     db = SessionLocal()
     user_repo = UserRepository.instance(db)
     employee_repo = EmployeeRepository(db)
     org_repo = OrganisationRepository(db)
 
-    user = user_repo.get_by("id", user_id)
-    if not user:
+    employee = employee_repo.get_by("id", employee_id)
+    if not employee:
+        return ApiResponse("Employee not found", False).return_response(), 404
+    user_e = user_repo.get_by("id", employee.user_id)
+    if not user_e:
         return ApiResponse("USER_NOT_FOUND", False).return_response(), 404
 
     new_email = data.get("email")
-    if new_email and new_email != user.email:
+    if new_email and new_email != user_e.email:
         if user_repo.get_by("email", new_email):
-            return ApiResponse("Email already in use", False).return_response(), 400
-        user.email = new_email
+            return ApiResponse("EMAIL_IS_OCCURRED", False).return_response(), 400
+        user_e.email = new_email
     if "first_name" in data:
-        user.first_name = data["first_name"]
+        user_e.first_name = data["first_name"]
     if "last_name" in data:
-        user.last_name = data["last_name"]
+        user_e.last_name = data["last_name"]
     if "organization_id" in data:
         org = org_repo.get_by("id", data["organization_id"])
         if not org:
             return ApiResponse("ORGANIZATION_NOT_FOUND", False).return_response(), 404
 
-        employee = employee_repo.get_by("user_id", user.id)
-        if not employee:
-            return ApiResponse("Employee not found", False).return_response(), 404
-
         employee.organization_id = data["organization_id"]
 
     db.commit()
 
-    return ApiResponse("USER_UPDATED_SUCCESSFULLY", True, user.to_dict()).return_response(), 200
+    return ApiResponse("USER_UPDATED_SUCCESSFULLY", True, user_e.to_dict()).return_response(), 200
 
 
 @employee_bp.route('/delete/<int:employee_id>', methods=['DELETE'])
@@ -158,6 +157,7 @@ def get_employee(employee_id):
         "first_name": user.first_name if user else None,
         "last_name": user.last_name if user else None,
         "organization": organization.name if organization else None,
+        "organization_id": organization.id
     }
 
     return ApiResponse("OK", True, result).return_response(), 200
