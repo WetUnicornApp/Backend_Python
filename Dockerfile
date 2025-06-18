@@ -1,24 +1,41 @@
-# Użyj obrazu z Pythonem 3.13 jako bazowego
 FROM python:3.13-slim
 
-# Ustawienie katalogu roboczego w kontenerze
 WORKDIR /app
 
-# Kopiowanie pliku requirements.txt do kontenera
-COPY requirements.txt .
+# Instalacja systemowych zależności
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    curl \
+    gnupg \
+    ca-certificates \
+    apt-transport-https \
+    unixodbc \
+    unixodbc-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalacja zależności
+# Dodaj Microsoft ODBC Driver 17
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-prod.gpg \
+  && echo "deb [signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list \
+  && apt-get update \
+  && ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+
+# Instalacja zależności Pythona
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Kopiowanie reszty kodu aplikacji do kontenera
+
 COPY .. .
 
-# Ustawienie zmiennej środowiskowej w kontenerze
+CMD ["flask", "run", "--host=0.0.0.0"]
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=development
 
-# Otworzenie portu, na którym aplikacja będzie działać
+
 EXPOSE 5000
 
-# Uruchomienie aplikacji Flask
-CMD ["flask", "run", "--host=0.0.0.0"]
+
+
+

@@ -3,7 +3,7 @@ services:
     build: .
     container_name: flask_backend
     ports:
-      - "5000:5000"
+      - "8080:5000"
     environment:
       - DATABASE_URL=mssql+pyodbc://vet-server-admin:4j%23%21j7%7D8HG5%3D5%2B@vet-server.database.windows.net:1433/vet-db?driver=ODBC+Driver+17+for+SQL+Server
     volumes:

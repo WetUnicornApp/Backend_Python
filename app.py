@@ -25,7 +25,13 @@ from app.models.visit_models.visit_employee import VisitEmployee
 
 
 app = Flask(__name__)
-swagger = Swagger(app)
+
+
+user_bp = Blueprint('user', __name__)
+organization_bp = Blueprint('organization', __name__)
+employee_bp = Blueprint('employee', __name__)
+owner_bp = Blueprint('owner', __name__)
+pet_bp = Blueprint('pet', __name__)
 app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(visit_bp, url_prefix='/visit')
 app.register_blueprint(pet_bp, url_prefix='/pet')
@@ -38,23 +44,19 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    db = next(get_db())
-    query = text("SELECT @@SERVERNAME AS server_name, DB_NAME() AS database_name")
-    result: Result = db.execute(query)
-    row = result.mappings().fetchone()
-    server_name = row['server_name']
-    database_name = row['database_name']
-    return f"Server: {server_name}, Database: {database_name}"
+    return "Welcome to the Unicorn API!"
 
-user_bp = Blueprint('user', __name__)
-organization_bp = Blueprint('organization', __name__)
-employee_bp = Blueprint('employee', __name__)
-owner_bp = Blueprint('owner', __name__)
-pet_bp = Blueprint('pet', __name__)
+#user_bp = Blueprint('user', __name__)
+#organization_bp = Blueprint('organization', __name__)
+#employee_bp = Blueprint('employee', __name__)
+#owner_bp = Blueprint('owner', __name__)
+#pet_bp = Blueprint('pet', __name__)
 if __name__ == "__main__":
-    print('Tabele')
-    print(Model.metadata.tables.keys())
+    #print('Tabele')
+    #print(Model.metadata.tables.keys())
+    #Model.metadata.create_all(engine)
+    #app.run(debug=True)
     Model.metadata.create_all(engine)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)

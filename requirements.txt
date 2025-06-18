@@ -4,10 +4,10 @@ asyncpg
 sqlalchemy
 python-dotenv
 flasgger
-pydantic
 flask_cors
 sqlalchemy
 pyodbc
 pytest
 bcrypt
 flask_restful
+pydantic
