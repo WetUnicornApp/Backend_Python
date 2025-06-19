@@ -21,21 +21,16 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
   && apt-get update \
   && ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
-
 # Instalacja zależności Pythona
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Upewnij się, że cały kod aplikacji trafia do kontenera
+COPY . .
 
-COPY .. .
-
-CMD ["flask", "run", "--host=0.0.0.0"]
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=development
 
-
 EXPOSE 5000
 
-
-
-
+CMD ["flask", "run", "--host=0.0.0.0"]
