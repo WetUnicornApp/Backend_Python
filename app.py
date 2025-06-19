@@ -27,11 +27,6 @@ from app.models.visit_models.visit_employee import VisitEmployee
 app = Flask(__name__)
 
 
-user_bp = Blueprint('user', __name__)
-organization_bp = Blueprint('organization', __name__)
-employee_bp = Blueprint('employee', __name__)
-owner_bp = Blueprint('owner', __name__)
-pet_bp = Blueprint('pet', __name__)
 app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(visit_bp, url_prefix='/visit')
 app.register_blueprint(pet_bp, url_prefix='/pet')
