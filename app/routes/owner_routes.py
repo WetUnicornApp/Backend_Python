@@ -75,7 +75,7 @@ def delete(owner_id):
     owner = repo.session.query(Owner).filter_by(id=owner_id).first()
     if not owner:
         return ApiResponse("OWNER_NOT_FOUND", False).return_response(), 404
-    user = repo_user.session.query(User).filter_by(id=owner_id).first()
+    user = repo_user.session.query(User).filter_by(id=id).first()
     if user:
         db.delete(user)
 

@@ -23,13 +23,15 @@ def create():
     return ApiResponse(response, True).return_response()
 
 
-@organization_bp.route('/view', methods=['GET'])
+
 @organization_bp.route('/view/<int:organization_id>', methods=['GET'])
 def get_organizations(organization_id):
     db = SessionLocal()
     org_rep = OrganisationRepository(db)
 
     org = org_rep.session.query(OrganizationModel).filter_by(id=organization_id).first()
+    if org is None:
+        return ApiResponse("ORGANIZATION_NOT_FOUND", False).return_response(), 404
 
     result = {
         "id": org.id,
